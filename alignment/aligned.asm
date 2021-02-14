@@ -19,3 +19,18 @@ func3:
 func2:
     push        rbp
     call        func3       ; call the third function
+    pop         rbp
+    ret
+    
+func1:
+    push        rbp
+    call        func2       ; call the second function
+    pop         rbp
+    ret
+    
+global main
+main:
+    push        rbp
+    call        func1       ; call the first function
+    pop         rbp
+ret
