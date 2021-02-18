@@ -72,26 +72,131 @@ main:
     push        rbp
     mov         rbp, rsp
     
+;------------------------
+
 %IF CREATE
+; create and open a file
+    mov         rdi, fileName
+    call        createFile
+    mov         qword [FD], rax     ; save descriptor
+; write to file #1
+    mov         rdi, qword [FD]
+    mov         rsi, text1
+    mov         rdx, qword [len1]
+    call        writeFile
+; close file
+    mov         rdi, qword [FD]
+    call        closeFile
 %ENDIF
+
+;------------------------
 
 %IF OVERWRITE
+; open file
+    mov         rdi, fileName
+    call        openFile
+    mov         qword [FD], rax     ; save file descriptor
+; overwrite file #2
+    mov         rdi, qword [FD]
+    mov         rsi, text2
+    mov         rdx, qword [len2]
+    call        writeFile
+; close file
+    mov         rdi, qword [FD]
+    call        closeFile
 %ENDIF
+
+;------------------------
 
 %IF APPEND
+; open file to append
+    mov         rdi, fileName
+    call        appendFile
+    mov         qword [FD], rax     ; save file descriptor
+; append to file #3
+    mov         rdi, qword [FD]
+    mov         rsi, text3
+    mov         rdx, qword [len3]
+    call        writeFile
+; close file
+    mov         rdi, qword [FD]
+    call        closeFile
 %ENDIF
+
+;------------------------
 
 %IF O_WRITE
+; open file to write
+    mov         rdi, fileName
+    call        openFile
+    mov         qword [FD], rax     ; save file descriptor
+; position file at offset
+    mov         rdi, qword [FD]
+    mov         rsi, qword[len2]    ; offset at this location
+    mov         rdx, 0
+    call        positionFile
+; write to file at offset
+    mov         rdi, qword [FD]
+    mov         rsi, text4
+    mov         rdx, qword [len4]
+    call        writeFile
+; close file
+    mov         rdi, qword [FD]
+    call closeFile
 %ENDIF
+
+;------------------------
 
 %IF READ
+; open file to read
+    mov         rdi, fileName
+    call        openFile
+    mov         qword [FD], rax     ; save file descriptor
+; read from file
+    mov         rdi, qword [FD]
+    mov         rsi, buffer
+    mov         rdx, bufferlen
+    call        readFile
+    mov         rdi, rax
+    call        printString
+; close file
+    mov         rdi, qword [FD]
+    call        closeFile
 %ENDIF
+
+;------------------------
 
 %IF O_READ
+; open file to read
+    mov         rdi, fileName
+    call        openFile
+    mov         qword [FD], rax     ; save file descriptor
+; position file at offset
+    mov         rdi, qword [FD]
+    mov         rsi, qword [len2]   ; skip the first line
+    mov         rdx, 0
+    call        positionFile
+; read from file
+    mov         rdi, qword [FD]
+    mov         rsi, buffer
+    mov         rdx, 10             ; number of characters to read
+    call        readFile
+    mov         rdi,  rax
+    call        printString
+; close file
+    mov         rdi, qword [FD]
+    call        closeFile
 %ENDIF
 
+;------------------------
+
 %IF DELETE
+    mov         rdi, fileName
+    call        deleteFile
 %ENDIF
+
+leave
+ret
 
 ; |-----------------------------|
 ; | File Manipulation Functions |
