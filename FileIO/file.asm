@@ -204,35 +204,128 @@ ret
 
 global readFile
 readFile:
+    mov         rax, NR_read
+    syscall     ; rax contains # of characters read
+    cmp         rax, 0
+    jl          readerror
+    mov         byte [rsi+rax], 0       ; add a terminating zero
+    mov         rax, rsi
+    mov         rdi, success_Read
+    push        rax     ; caller saved
+    call        printString
+    pop         rax     ; caller saved
+    ret
 readerror:
+    mov         rdi, error_Read
+    call        printString
+    ret
 
 global deleteFile
 deleteFile:
+    mov         rax, NR_unlink
+    syscall
+    cmp         rax, 0
+    jl          deleteerror
+    mov         rdi, success_Delete
+    call        printString
+    ret
 deleteerror:
-
+    mov         rdi, error_Delete
+    call        printString
+    ret
+    
 global appendFile
 appendFile:
+    mov         rax, NR_open
+    mov         rsi, O_RDWR|O_APPEND
+    syscall
+    cmp         rax, 0
+    jl          appenderror
+    mov         rdi, success_Append
+    push        rax     ; caller saved
+    call        printString
+    pop         rax     ; caller saved
+    ret
 appenderror:
+    mov         rdi, error_Append
+    call        printString
+    ret
 
 global openFile
 openFile:
+    mov         rax, NR_open
+    mov         rsi, O_RDWR
+    syscall
+    cmp         rax, 0
+    jl          openerror
+    mov         rdi, success_Open
+    push        rax     ; caller saved
+    call        printString
+    pop         rax     ; caller saved
+    ret
 openerror:
+    mov         rdi, error_Open
+    call        printString
+    ret
 
 global writeFile
 writeFile:
+    mov         rax, NR_write
+    syscall
+    cmp         rax, 0
+    jl          writeerror
+    mov         rdi, success_Write
+    call        printString
+    ret
 writeerror:
+    mov         rdi, error_Write
+    call        printString
+    ret
 
 global positionFile
 positionFile:
+    mov         rax, NR_lseek
+    syscall
+    cmp         rax, 0
+    jl          positionerror
+    mov         rdi, success_Position
+    call        printString
+    ret
 positionerror:
+    mov         rdi, error_Position
+    call        printString
+    ret
 
 global closeFile
 closeFile:
+    mov         rax, NR_close
+    syscall
+    cmp         rax, 0
+    jl          closeerror
+    mov         rdi, success_Close
+    call        printString
+    ret
 closeerror:
-
+    mov         rdi, error_Close
+    call        printString
+    ret
+    
 global createFile
 createFile:
+    mov         rax, NR_create
+    mov         rsi, S_IRUSR |S_IWUSR
+    syscall
+    cmp         rax, 0      ; file descriptor in rax
+    jl          createerror
+    mov         rdi, success_Create
+    push        rax         ; caller saved
+    call        printString
+    pop         rax         ; caller saved
+    ret
 createerror:
+    mov         rdi, error_Create
+    call        printString
+    ret
 
 ; Print Feedback
 
