@@ -1,4 +1,4 @@
-success_; file.asm
+; file.asm
 section .data
 
 ; expressions for conditional assembly
