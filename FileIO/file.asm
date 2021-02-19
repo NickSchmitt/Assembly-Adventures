@@ -331,3 +331,21 @@ createerror:
 
 global printString
 printString:
+; Count characters
+    mov         r12, rdi
+    mov         rdx, 0
+    strLoop:
+    cmp         byte [r12], 0
+    je          strDone
+    inc         rdx         ; length in rdx
+    inc         r12
+    jmp         strLoop
+    strDone:
+    cmp         rdx, 0      ; no string (0 length)
+    je          prtDone
+    mov         rsi, rdi
+    mov         rax, 1
+    mov         rdi, 1
+    syscall
+    prtDone:
+    ret
