@@ -69,3 +69,29 @@ section .data
 		call		printdpfp
 leave
 ret
+
+printspfp:
+push	rbp
+mov		rbp, rsp
+		movss		xmm0, [rsi]
+		cvtss2sd	xmm0, xmm0
+		movss		xmm1, [rsi+4]
+		cvtss2sd	xmm1, xmm1
+		movss		xmm2, [rsi+8]
+		cvtss2sd	xmm2, xmm2
+		movss		xmm3, [rsi+12]
+		cvtss2sd	xmm3, xmm3
+		mov			rax, 4 			; four floats
+		call		printf
+leave
+ret
+
+printdpfp:
+push	rbp
+mov		rbp, rsp
+		movsd		xmm0, [rsi]
+		movsd		xmm1, [rsi+8]
+		mov			rax, 2			; two floats
+		call		printf
+leave
+ret
